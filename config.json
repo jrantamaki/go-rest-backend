@@ -1,0 +1,25 @@
+{
+    "routes" :
+    [
+        {
+            "route":"/todo/1",
+            "httpStatus":200,
+            "responseFile":"todo1.json"
+        },
+        {
+            "route":"/todo/2",
+            "httpStatus":200,
+            "responseFile":"todo1.json"
+        },
+        {
+            "route":"/todo/1",
+            "httpStatus":200,
+            "responseFile":"todo1.json"
+        },
+        {
+            "route":"/fail/notfound",
+            "httpStatus":404,
+            "responseFile":null
+        }
+    ]
+}
