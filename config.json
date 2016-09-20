@@ -1,25 +1,25 @@
 {
-    "routes" :
+    "routes":
     [
         {
             "route":"/todo/1",
             "httpStatus":200,
-            "responseFile":"todo1.json"
+            "responseFilePath":"todo1.json"
         },
         {
             "route":"/todo/2",
             "httpStatus":200,
-            "responseFile":"todo1.json"
+            "responseFilePath":"todo2.json"
         },
         {
-            "route":"/todo/1",
+            "route":"/todo/3",
             "httpStatus":200,
-            "responseFile":"todo1.json"
+            "responseFilePath":"todo3.json"
         },
         {
             "route":"/fail/notfound",
             "httpStatus":404,
-            "responseFile":null
+            "responseFilePath":null
         }
     ]
 }

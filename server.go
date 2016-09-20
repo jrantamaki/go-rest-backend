@@ -9,6 +9,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type StaticRoute struct {
+	Route            string  `json:"route"`
+	ResponseFilePath *string `json:"responseFilePath"`
+	HttpStatus       int     `json:"httpStatus"`
+}
+
+type Routes struct {
+	Routes []StaticRoute `json:"routes"`
+}
+
+var RoutingMap map[string]StaticRoute
+
 func loadResponse(filePath string) interface{} {
 	var resp interface{}
 	data, err := ioutil.ReadFile(filePath)
@@ -19,31 +31,48 @@ func loadResponse(filePath string) interface{} {
 	return resp;
 }
 
+func LoadRoutes () {
+	var configuredRoutes Routes
 
-func getFilePath(path string) string {
-	// TODO make dynamic
-	var m = make(map[string]string)
-	m["/todo/1"] = "todo1.json"
-	m["/todo/2"] = "todo2.json"
-	m["/todo/3"] = "todo3.json"
+	file := "config.json"
+	data, err := ioutil.ReadFile(file)
 
-	return m[path];
+	if err != nil {
+		log.Panic("Could not load routes from configuration. ", err)
+	}
+	err = json.Unmarshal(data, &configuredRoutes)
+
+	if err != nil {
+		log.Panic("Failed unmarshalling the routes ", err)
+	}
+
+	RoutingMap = make(map[string]StaticRoute)
+
+	for index, route := range configuredRoutes.Routes {
+		RoutingMap[route.Route] = configuredRoutes.Routes[index]
+	}
 }
 
 func RouteHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Loading the url: ", r.URL.Path)
+	fmt.Println("Loading the url: ", r.URL.Path, " with request method: ", r.Method)
 
-	filePath := getFilePath(r.URL.Path)
-	p := loadResponse(filePath)
-
-	pp, err := json.Marshal(p)
-
-	if err != nil {
-		log.Panic("Could not marshall to json the file ", filePath)
-	}
+	route := RoutingMap[r.URL.Path]
+	filePath := route.ResponseFilePath
+	httpStatus := route.HttpStatus
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(pp)
+	w.WriteHeader(httpStatus)
+
+	if filePath != nil {
+		p := loadResponse(*filePath)
+
+		pp, err := json.Marshal(p)
+
+		if err != nil {
+			log.Panic("Json marshalling failed with error: ",  err)
+		}
+		w.Write(pp)
+	}
 }
 
 func TrueMatcher(r *http.Request, rm *mux.RouteMatch) bool {
@@ -52,11 +81,12 @@ func TrueMatcher(r *http.Request, rm *mux.RouteMatch) bool {
 
 func main() {
 	fmt.Println("Go rest backend, starting to listen to 8080!")
+	LoadRoutes()
+
 	r := mux.NewRouter()
 
 	r.MatcherFunc(TrueMatcher).HandlerFunc(RouteHandler);
 
 	http.Handle("/", r)
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
-
