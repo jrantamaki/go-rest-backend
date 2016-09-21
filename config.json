@@ -4,22 +4,26 @@
         {
             "route":"/todo/1",
             "httpStatus":200,
-            "responseFilePath":"todo1.json"
+            "responseFilePath":"todo1.json",
+            "delay":0
         },
         {
             "route":"/todo/2",
             "httpStatus":200,
-            "responseFilePath":"todo2.json"
+            "responseFilePath":"todo2.json",
+            "delay":100
         },
         {
             "route":"/todo/3",
             "httpStatus":200,
-            "responseFilePath":"todo3.json"
+            "responseFilePath":"todo3.json",
+            "delay":200
         },
         {
             "route":"/fail/notfound",
             "httpStatus":404,
-            "responseFilePath":null
+            "responseFilePath":null,
+            "delay":2000
         }
     ]
 }

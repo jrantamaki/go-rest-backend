@@ -7,12 +7,15 @@ import (
 	"encoding/json"
 	"log"
 	"github.com/gorilla/mux"
+	"time"
+	"math/rand"
 )
 
 type StaticRoute struct {
 	Route            string  `json:"route"`
 	ResponseFilePath *string `json:"responseFilePath"`
 	HttpStatus       int     `json:"httpStatus"`
+	Delay            *int    `json:"delay"`
 }
 
 type Routes struct {
@@ -59,6 +62,12 @@ func RouteHandler(w http.ResponseWriter, r *http.Request) {
 	route := RoutingMap[r.URL.Path]
 	filePath := route.ResponseFilePath
 	httpStatus := route.HttpStatus
+	delay := route.Delay
+
+	if (delay != nil && *delay > 0) {
+		pause := rand.Intn(*delay)
+		time.Sleep(time.Duration(pause) * time.Millisecond)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(httpStatus)
@@ -69,7 +78,7 @@ func RouteHandler(w http.ResponseWriter, r *http.Request) {
 		pp, err := json.Marshal(p)
 
 		if err != nil {
-			log.Panic("Json marshalling failed with error: ",  err)
+			log.Panic("Json marshalling failed with error: ", err)
 		}
 		w.Write(pp)
 	}
