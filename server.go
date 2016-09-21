@@ -28,7 +28,7 @@ func loadResponse(filePath string) interface{} {
 	var resp interface{}
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		log.Panic("Could not read the file: %s", filePath)
+		log.Fatal("Failed to load the response file: ", err)
 	}
 	json.Unmarshal(data, &resp)
 	return resp;
@@ -41,12 +41,12 @@ func LoadRoutes () {
 	data, err := ioutil.ReadFile(file)
 
 	if err != nil {
-		log.Panic("Could not load routes from configuration. ", err)
+		log.Fatal("Could not load routes from configuration. ", err)
 	}
 	err = json.Unmarshal(data, &configuredRoutes)
 
 	if err != nil {
-		log.Panic("Failed unmarshalling the routes ", err)
+		log.Fatal("Failed unmarshalling the routes ", err)
 	}
 
 	RoutingMap = make(map[string]StaticRoute)
@@ -59,7 +59,14 @@ func LoadRoutes () {
 func RouteHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Loading the url: ", r.URL.Path, " with request method: ", r.Method)
 
-	route := RoutingMap[r.URL.Path]
+	route, exists := RoutingMap[r.URL.Path]
+
+	if !exists {
+		fmt.Println("Check your config.json. No route configured for ", r.URL.Path)
+		w.WriteHeader(500)
+		return
+	}
+
 	filePath := route.ResponseFilePath
 	httpStatus := route.HttpStatus
 	delay := route.Delay
