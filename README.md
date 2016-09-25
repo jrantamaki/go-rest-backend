@@ -20,19 +20,19 @@ You should see a json response.
 
 ## Configuration
 
-You can create your own configuration by modifying the _config.json_
+You can create your own configuration by modifying the __config.json__
 
-    `{
+    {
         "route":"/todo/1",
         "httpStatus":200,
         "responseFilePath":"todo1.json",
         "delay":0
-    }`
+    }
 
-1. _route_ defines the url relative to http://localhost:8080
-2. _httpStatus_ defines the actual http response status code.
-3. _responseFilePath_ defines the path from where to read the response payload.
-4. _delay_ can be used to add additional delay to response. The delay is random and _delay_ is the max value for it.
+1. __route__ defines the url relative to http://localhost:8080
+2. __httpStatus__ defines the actual http response status code.
+3. __responseFilePath__ defines the path from where to read the response payload.
+4. __delay__ can be used to add additional delay to response. The delay is random and __delay__ is the max value for it.
 
 Once you have the routes configured, add the response json files and you are ready to go! :)
 
